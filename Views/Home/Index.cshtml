@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<table class="table table-bordered table-hover table-striped" id="datalist">
+    <thead class="table-dark">
+        <tr>
+            <th>SR.NO</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Face Mark</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        showstudentdata();
+    });
+
+    function showstudentdata() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetSutdentDetails',
+            contentType: "application/ json; charset = utf - 8",
+            success: function (response) {
+                if (response.success) {
+
+                    let rows = "";
+                    response.data.forEach(stm => {
+                        rows += `<tr>
+            <td>${stm.sr_no}</td>
+            <td>${stm.name}</td>
+            <td>${stm.age}</td>
+            <td>${stm.gender}</td>
+            <td>${stm.facemark}</td>
+            <td>
+
+               <button class="btn btn-primary" >Edit</button>
+              <button class="btn btn-danger">Delete</button>
+
+           </td>
+        </tr>`;
+                    });
+                    $("#datalist tbody").html(rows);
+                } else {
+                    alert("Failed to load student data.");
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    
+</script>
