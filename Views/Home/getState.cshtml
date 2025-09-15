@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewBag.Title = "getState";
+}
+
+
+<form>
+
+    <label>CountryName</label><select id="ddlCountry"></select>
+    <label>StateName</label><input type="text" id="stateName" /><br><br>
+    <label>StateCode</label><input type="number" id="stateCode" /><br><br>
+    <button type="button" onclick="insertState()">Submit</button>
+
+</form>
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script type="text/javascript">
+
+    function insertState() {
+        $.ajax({
+            type: "POST",
+            url: '/Home/postState',
+            data: JSON.stringify({
+                countryName: $("#countryName").val(),
+                stateName: $("#stateName").val(),
+                stateCode: $("#stateCode").val(),
+            }),
+            contentType: "application/json; charset=utf-8",
+            //success: function (response) {
+            //    if (response.success) {
+            //        alert(response.message);
+            //    } else {
+            //        alert(response.message);
+            //    }
+            //},
+            //error: function () {
+            //    alert("Server error.");
+            //}
+
+        });
+    }
+
+</script>

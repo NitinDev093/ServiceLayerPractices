@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "getCountry";
+}
+
+
+<form>
+
+    <label>CountryName</label><input type="text" id="countryName" /><br><br>
+    <label>CountryCode</label><input type="number" id="countryCode" /><br><br>
+    <button type="button" onclick="countryData()">Submit</button>
+
+</form>
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script type="text/javascript">
+
+    function countryData() {
+
+        $.ajax({
+            type: "POST",
+            url: '/Home/postCountry',
+            data: JSON.stringify({
+                countryName: $("#countryName").val(),
+                countryCode: $("#countryCode").val(),
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+
+</script>
