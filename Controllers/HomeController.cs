@@ -1,4 +1,5 @@
 ﻿using ServiceLayerPractices.DAL;
+using ServiceLayerPractices.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,8 +7,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace ServiceLayerPractices.Controllers
 {
@@ -87,10 +90,60 @@ namespace ServiceLayerPractices.Controllers
             return View();
         }
         //poststate
-        public ActionResult postState(string countryName,string stateName,int stateCode)
+        public ActionResult postState(int countryId, string stateName, int stateCode)
         {
-            return View();
+            try
+            {
+                string message = "";
+                using(SqlConnection sqlcon=new SqlConnection(connection_str))
+                {
+                    SqlCommand cmd = new SqlCommand("usp_insertState", sqlcon);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("countryId",countryId);
+                    cmd.Parameters.AddWithValue("stateName",stateName);
+                    cmd.Parameters.AddWithValue("stateCode",stateCode);
+                    sqlcon.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result!=null)
+                    {
+                        message = result.ToString();
+                    }
+                    return Json(new {success=true,message=message }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+
+        public ActionResult readCountry() 
+        {
+            try
+            {
+                List<CountryModel> countryNames = new List<CountryModel>();
+                using (SqlConnection sqlcon=new SqlConnection(connection_str))
+                {
+                    SqlCommand cmd=new SqlCommand("usp_readCountry", sqlcon);
+                    cmd.CommandType= CommandType.StoredProcedure;
+                    sqlcon.Open();
+                    SqlDataReader rdr= cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        CountryModel cm= new CountryModel();
+                        cm.countryid= Convert.ToInt32(rdr["countryId"]);
+                        cm.countryname=rdr["countryName"].ToString();
+                        countryNames.Add(cm);
+                    }
+                }
+                return Json(new { success = true, message = "fetched", data = countryNames }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
     }
 }

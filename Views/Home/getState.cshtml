@@ -6,7 +6,7 @@
 
 <form>
 
-    <label>CountryName</label><select id="ddlCountry"></select>
+    <label>CountryName</label><select id="ddlCountry"></select><br><br>
     <label>StateName</label><input type="text" id="stateName" /><br><br>
     <label>StateCode</label><input type="number" id="stateCode" /><br><br>
     <button type="button" onclick="insertState()">Submit</button>
@@ -16,27 +16,56 @@
 
 <script type="text/javascript">
 
+    $(document).ready(function () {
+        getCountry();
+    });
+
     function insertState() {
         $.ajax({
             type: "POST",
             url: '/Home/postState',
             data: JSON.stringify({
-                countryName: $("#countryName").val(),
+                countryId: $("#ddlCountry").val(),
                 stateName: $("#stateName").val(),
                 stateCode: $("#stateCode").val(),
             }),
             contentType: "application/json; charset=utf-8",
-            //success: function (response) {
-            //    if (response.success) {
-            //        alert(response.message);
-            //    } else {
-            //        alert(response.message);
-            //    }
-            //},
-            //error: function () {
-            //    alert("Server error.");
-            //}
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
 
+        });
+    }
+    function getCountry() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/readCountry',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+
+                    $("#ddlCountry").empty();
+
+                    $("#ddlCountry").append($('<option></option>').val("").html("--Select Country--"));
+
+                    $.each(response.data, function (i, country) {
+                        $("#ddlCountry").append(
+                            $('<option></option>').val(country.countryid).html(country.countryname)
+                        );
+                    });
+                }
+            },
+            error: function () {
+                alert("Internal server error");
+            }
+            
         });
     }
 
