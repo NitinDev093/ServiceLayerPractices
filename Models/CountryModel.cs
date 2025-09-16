@@ -9,5 +9,8 @@ namespace ServiceLayerPractices.Models
     {
         public int countryid { get; set; }
         public string countryname { get; set; }
+        public string statename { get; set; }
+        public int statecount { get; set; }
+
     }
 }

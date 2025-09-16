@@ -144,6 +144,60 @@ namespace ServiceLayerPractices.Controllers
             }
         }
 
+        public ActionResult countryAndstateCount() 
+        {
+            try
+            {
+                using (SqlConnection sqlcon=new SqlConnection(connection_str))
+                {
+                    List<CountryModel> list = new List<CountryModel>();
+                    SqlCommand cmd = new SqlCommand("usp_getcountryandstatecount", sqlcon);
+                    cmd.CommandType= CommandType.StoredProcedure;
+                    sqlcon.Open();
+                    SqlDataReader rdr= cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        CountryModel cm= new CountryModel();
+                        cm.countryid= Convert.ToInt32(rdr["countryId"]);
+                        cm.countryname=rdr["countryName"].ToString();
+                        cm.statecount= Convert.ToInt32(rdr["statecount"]);
+                        list.Add(cm);
+                    }
+                    return Json(new { success = true, message = "fetched", data = list }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ActionResult StateName(int CountryId)
+        {
+            try
+            {
+                using (SqlConnection sqlcon = new SqlConnection(connection_str))
+                {
+                    List<CountryModel> list = new List<CountryModel>();
+                    SqlCommand cmd = new SqlCommand("usp_getStateByCountryId", sqlcon);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("Id",CountryId);
+                    sqlcon.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        CountryModel cm = new CountryModel();
+                        cm.statename = rdr["stateName"].ToString();
+                        list.Add(cm);
+                    }
+                    return Json(new { success = true, message = "fetched", data = list }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
     }
 }

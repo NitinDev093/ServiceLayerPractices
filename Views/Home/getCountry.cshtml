@@ -11,9 +11,59 @@
     <button type="button" onclick="countryData()">Submit</button>
 
 </form>
+<br>
+<br>
+<br>
+
+<table id="countryData">
+    <thead>
+        <tr>
+            <th>CountryName</th>
+            <th>StateCount</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+
+<!-- State Name Modal -->
+<div class="modal fade" id="exampleStateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">State Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <table id="stateData">
+                    <thead>
+                        <tr>
+                            <th>StateName</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 
 <script type="text/javascript">
+
+    $(document).ready(function () {
+        countryAndStateCount();
+
+    });
 
     function countryData() {
 
@@ -38,5 +88,45 @@
         });
     }
 
+    function countryAndStateCount() {
+
+        $.ajax({
+            type: "GET",
+            url: '/Home/countryAndstateCount',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#countryData tbody").empty();
+                $.each(response.data, function (index, item) {
+                    var row = "<tr>" +
+                        "<td>" + item.countryname + "</td>" +
+                        "<td><a href='#' onclick='getStateName(" + item.countryid + ",\""+item.statecount+"\")'>" + item.statecount + "</a></td>" +
+                        "</tr > ";
+                    $("#countryData tbody").append(row);
+                });
+            },
+        });
+    }
+
+    function getStateName(Id,Count) {
+        if (Count == 0) { 
+            alert("No State Available For This Country");
+            return;
+        }
+        $("#exampleStateModal").modal('show');
+        $.ajax({
+            type: "GET",
+            url: '/Home/StateName',
+            data: { CountryId: Id },
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#stateData tbody").empty();
+                $.each(response.data, function (index, item) {
+                    var row = "<tr>" + "<td>"+item.statename+"</td>" + "</tr>";
+                    $("#stateData tbody").append(row);
+                });
+            },
+        });
+
+    }
 
 </script>
